@@ -1,0 +1,21 @@
+[package]
+name = "static_lib_stm32"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cty = "*"
+
+[lib]
+crate-type = ["staticlib"]
+
+[build]
+target="thumbv7em-none-eabihf"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
