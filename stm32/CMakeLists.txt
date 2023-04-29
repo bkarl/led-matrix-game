@@ -11,6 +11,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
 set(PROJECT_SOURCES
     main.c
+    hardware.c
     stm32l4xx_it.c
 )
 

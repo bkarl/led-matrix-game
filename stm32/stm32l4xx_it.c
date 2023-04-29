@@ -21,6 +21,8 @@
 #include "main.h"
 #include "stm32l4xx_it.h"
 extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim2;
+
 extern TIM_HandleTypeDef htim6;
 extern uint8_t flag_rotary;
 extern uint8_t flag_debounce;
@@ -207,17 +209,35 @@ void TIM1_CC_IRQHandler(void)
   /* USER CODE END TIM1_UP_TIM16_IRQn 1 */
 }
 
+void TIM2_IRQHandler()
+{
+  /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 0 */
+  flag_rotary = 1;
+  /* USER CODE END TIM1_UP_TIM16_IRQn 0 */
+  /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 1 */
+  HAL_TIM_IRQHandler(&htim2);
+  /* USER CODE END TIM1_UP_TIM16_IRQn 1 */
+}
+
 void TIM6_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM6_IRQn 0 */
-
+  flag_debounce = 0;
   /* USER CODE END TIM6_IRQn 0 */
   HAL_TIM_IRQHandler(&htim6);
   /* USER CODE BEGIN TIM6_IRQn 1 */
-  flag_debounce = 0;
   /* USER CODE END TIM6_IRQn 1 */
 }
 
+void EXTI9_5_IRQHandler()
+{
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
+}
+
+void EXTI0_IRQHandler()
+{
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+}
 /******************************************************************************/
 /* STM32L4xx Peripheral Interrupt Handlers                                    */
 /* Add here the Interrupt Handlers for the used peripherals.                  */

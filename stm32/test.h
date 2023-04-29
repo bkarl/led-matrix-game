@@ -1,3 +1,5 @@
+#pragma once
+
 typedef struct UserInput {
     int left_rotary_val;
     int right_rotary_val;
