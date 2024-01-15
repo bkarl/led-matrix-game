@@ -29,20 +29,16 @@ impl<'a> DrawingGame<'a> {
 			mode: GameMode::Navigating }
 	}
 
-	fn user_input_to_movement_delta(&mut self, input: UserInput) -> Position {
-		let delta = Position {
-			x: rotary_movement_to_position_delta(self.last_user_input.left_rotary_val, input.left_rotary_val),			
-			y: rotary_movement_to_position_delta(self.last_user_input.right_rotary_val, input.right_rotary_val)
-		};
-		self.last_user_input = input;
-		delta
+	fn set_new_cursor_position(&mut self, input: UserInput) {
+		self.cursor_position.x = input.left_rotary_val;
+		self.cursor_position.y = input.right_rotary_val;
 	}
 
 	pub fn user_input(&mut self, input: UserInput) {
 		match self.mode {
 			GameMode::Navigating => {
-				let delta = self.user_input_to_movement_delta(input);
-				self.apply_cursor_position_change(delta);			
+				self.set_new_cursor_position(input);
+				self.gen_cursor_matrix();			
 			}
 
 			GameMode::Drawing=> {
@@ -52,13 +48,15 @@ impl<'a> DrawingGame<'a> {
 		self.render();
 	}
 
-	fn apply_cursor_position_change(&mut self, delta_position: Position) {
+	fn gen_cursor_matrix(&mut self) {
 		self.cursor_matrix = [[0; MATRIX_SIZE]; MATRIX_SIZE];
 		let (cursor_shape, num_cursor_points) = self.current_cursor.get_cursor();
 		for n_pixel in 0 .. num_cursor_points {
 			let mut cursor_pixel = cursor_shape[n_pixel];
-			cursor_pixel.translate_in_matrix_bounds(delta_position);
-			self.cursor_matrix[cursor_pixel.y as usize][cursor_pixel.x as usize] = 255;
+			if cursor_pixel.can_translate_inside_matrix_bounds(self.cursor_position) {
+				cursor_pixel.translate(self.cursor_position);
+				self.cursor_matrix[cursor_pixel.y as usize][cursor_pixel.x as usize] = 255;
+			}
 		}
 	}
 

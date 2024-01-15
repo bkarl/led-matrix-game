@@ -26,27 +26,31 @@ impl Position{
 }
 
 impl Position {
-	pub fn translate_in_matrix_bounds(&mut self, delta: Self) {
-		let mut newx = self.x + delta.x;
-		let mut newy = self.y + delta.y;
+	pub fn can_translate_inside_matrix_bounds(&mut self, delta: Self) -> bool {
+		let newx = self.x + delta.x;
+		let newy = self.y + delta.y;
 
 		if newx >= MATRIX_SIZE as i32 {
-			newx = (MATRIX_SIZE - 1) as i32;
+			return false;
 		}
 		if newy >= MATRIX_SIZE as i32 {
-			newy = (MATRIX_SIZE - 1) as i32;
+			return false;
 		}
 
 		if newx < 0 {
-			newx = 0;
+			return false;
 		}
 
 		if newy < 0 {
-			newy = 0;
+			return false;
 		}
+		return true;
+	}
 
-		self.x = newx;
-		self.y = newy;
+
+	pub fn translate(&mut self, delta: Self) {
+		self.x += delta.x;
+		self.y += delta.y;
     }
 }
 
@@ -87,18 +91,24 @@ mod tests {
 	}
 
 	#[test]
-	fn test_translate_position_ok() {
+	fn test_translate_position() {
 		let mut pos = Position{ x: 4, y: 4};
 		let delta = Position { x: 1, y: -1};
-		pos.translate_in_matrix_bounds(delta);
+		pos.translate(delta);
 		assert_eq!(Position{ x: 5, y: 3}, pos);
 	}
 
 	#[test]
-	fn test_translate_position_nok() {
+	fn test_can_translate_position_nok() {
 		let mut pos = Position{ x: 0, y: 7};
 		let delta = Position { x: -1, y: 1};
-		pos.translate_in_matrix_bounds(delta);
-		assert_eq!(Position{ x: 0, y: 7}, pos);
+		assert_eq!(pos.can_translate_inside_matrix_bounds(delta), false);
+	}
+
+	#[test]
+	fn test_can_translate_position_ok() {
+		let mut pos = Position{ x: 0, y: 5};
+		let delta = Position { x: 3, y: 1};
+		assert_eq!(pos.can_translate_inside_matrix_bounds(delta), true);
 	}
 }
